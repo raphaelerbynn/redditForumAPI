@@ -19,7 +19,7 @@ const Post = mongoose.model("post", postSchema);
 //connect to mongodb
 mongoose
   .connect(
-    "mongodb+srv://raphael:mountain2402@cluster0.yqvrf18.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://username:<password>@cluster0.yqvrf18.mongodb.net/?retryWrites=true&w=majority"
   )
   .then(() => console.log("Database connected"))
   .catch((err) => {
