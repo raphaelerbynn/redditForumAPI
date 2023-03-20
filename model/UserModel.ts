@@ -1,14 +1,15 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/database";
 
-const User = db.sequelize.define("users", {
-    username: {
-        type: DataTypes.STRING,
-        primaryKey: true
-    },
+interface UserModel extends Model{
+    email: string,
+    password: string
+}
+
+const User = db.sequelize.define<UserModel>("users", {
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        primaryKey: true
     },
     password: DataTypes.STRING
 }, {

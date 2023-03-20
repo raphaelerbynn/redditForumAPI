@@ -9,20 +9,13 @@ const commentSchema = yup.object().shape({
     content: yup.string().required("Content required")
 });
 
-const userRegisterSchema = yup.object().shape({
-    username: yup.string().required("Username required"),
+const userSchema = yup.object().shape({
     email: yup.string().email().required("Email required"),
-    password: yup.string().min(5).required("Password required")
-});
-
-const userLoginSchema = yup.object().shape({
-    username: yup.string().required("Username required"),
     password: yup.string().min(5).required("Password required")
 });
 
 export {
     postSchema,
     commentSchema,
-    userLoginSchema,
-    userRegisterSchema
+    userSchema,
 }
