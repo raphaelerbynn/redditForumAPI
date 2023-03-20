@@ -8,8 +8,7 @@ const Post = db.sequelize.define(`posts`, {
         primaryKey: true
     },
     title: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    user_id: DataTypes.STRING
+    content: DataTypes.TEXT
 },{
     tableName: "posts"
 });

@@ -21,7 +21,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     try{
         const user = await User.findByPk(userDetails.username);
         if(!user){
-            res.status(409);
+            res.status(404);
             throw Error("User not found");
         }
 

@@ -9,8 +9,7 @@ const Comment = db.sequelize.define(`comments`, {
         primaryKey: true
     },
     title: DataTypes.STRING,
-    content: DataTypes.TEXT,
-    user_id: DataTypes.STRING
+    content: DataTypes.TEXT
 },{
     tableName: "comments"
 });
