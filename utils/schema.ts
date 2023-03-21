@@ -1,3 +1,4 @@
+import { Request } from "express";
 import * as yup from "yup";
 
 const postSchema = yup.object().shape({
@@ -14,8 +15,17 @@ const userSchema = yup.object().shape({
     password: yup.string().min(5).required("Password required")
 });
 
+
+interface RequestCustom extends Request {
+    user: {
+      email: string;
+      password: string;
+    };
+}
+
 export {
     postSchema,
     commentSchema,
     userSchema,
+    RequestCustom
 }

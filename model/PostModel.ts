@@ -1,7 +1,11 @@
-import { DataTypes } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 import db from "../config/database";
 
-const Post = db.sequelize.define(`posts`, {
+interface PostModel extends Model{
+    userId: string
+}
+
+const Post = db.sequelize.define<PostModel>(`posts`, {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,

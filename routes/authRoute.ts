@@ -1,10 +1,10 @@
 import express from "express";
 import authController from "../controller/authController";
-import { validateUserData } from "../utils/middlewares";
+import { authenticateUser, validateUserData } from "../utils/middlewares";
 
 const router = express.Router({ mergeParams: true });
 
 router.post("/register", validateUserData, authController.registerUser);
-router.post("/login", validateUserData, authController.loginUser);
+router.post("/login", authenticateUser, authController.loginUser);
 
 export default router;
