@@ -1,5 +1,6 @@
 import { Response, Request, NextFunction } from "express";
 import { Post, Comment } from "../model/index";
+import { RequestCustom } from "../utils/schema";
 
 const getAllCommnetForPost = async (req: Request, res: Response, next: NextFunction) => {
     const postID = req.params.post_id;
@@ -74,7 +75,7 @@ const createComment = async (req: Request, res: Response, next: NextFunction) =>
     }
 };
 
-const updateComment = async (req: Request, res: Response, next: NextFunction) => {
+const updateComment = async (req: RequestCustom, res: Response, next: NextFunction) => {
     const postID = req.params.post_id;
     const commentID = req.params.comment_id;
     const commentData = req.body;
@@ -91,7 +92,13 @@ const updateComment = async (req: Request, res: Response, next: NextFunction) =>
             if(!comment){
                 throw Error("Comment not found");
             }
-            comment.update(commentData);
+
+            if(comment.userId !== req.user.email){
+                res.status(409);
+                throw Error("Unauthorized");
+            }
+
+            await comment.update(commentData);
             res.send("Comment updates successfully");
         }catch(err){
             next(err);
@@ -101,7 +108,7 @@ const updateComment = async (req: Request, res: Response, next: NextFunction) =>
     }
 };
 
-const deleteComment = async (req: Request, res: Response, next: NextFunction) => {
+const deleteComment = async (req: RequestCustom, res: Response, next: NextFunction) => {
     const postID = req.params.post_id;
     const commentID = req.params.comment_id;
     try{
@@ -117,6 +124,12 @@ const deleteComment = async (req: Request, res: Response, next: NextFunction) =>
                 res.status(404);
                 throw Error("Comment not found");
             }
+
+            if(comment.userId !== req.user.email){
+                res.status(409);
+                throw Error("Unauthorized");
+            }
+
             await comment.destroy()
             res.send("Comment deleted successfully");
         }catch(err){

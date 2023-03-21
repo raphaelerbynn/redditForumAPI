@@ -1,9 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import db from "../config/database";
-
-interface PostModel extends Model{
-    userId: string
-}
+import { PostModel } from "./interface";
 
 const Post = db.sequelize.define<PostModel>(`posts`, {
     id: {
