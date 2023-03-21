@@ -1,21 +1,18 @@
 import { Response, Request, NextFunction } from "express";
-import { Post, Comment } from "../model/index";
 import { RequestCustom } from "../utils/schema";
+import { createNewComment, deleteCommentById, findAllComment, findCommentById, updateCommentById } from "../services/commentService";
+import { findPostById } from "../services/postService";
 
 const getAllCommnetForPost = async (req: Request, res: Response, next: NextFunction) => {
     const postID = req.params.post_id;
     try{
-        const post = await Post.findByPk(postID);
+        const post = await findPostById(postID);
         if(!post){
             res.status(404);
             throw Error("Post not found");
         }
         try{
-            const comments = await Comment.findAll({
-                where: {
-                    postId: postID
-                }
-            });
+            const comments = await findAllComment(postID);
             res.send(comments);
         }catch(err){
             next(err);
@@ -31,13 +28,13 @@ const getSingleComment = async (req: Request, res: Response, next: NextFunction)
     const commentID = req.params.comment_id;
     try{
         //throw Error("Test error")
-        const post = await Post.findByPk(postID);
+        const post = await findPostById(postID);
         if(!post){
             res.status(404);
             throw Error("Post not found");
         }
         try{
-            const comment = await Comment.findByPk(commentID);
+            const comment = await findCommentById(commentID);
             if(!comment){
                 res.status(404);
                 throw Error("Comment not found");
@@ -51,20 +48,21 @@ const getSingleComment = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-const createComment = async (req: Request, res: Response, next: NextFunction) => {
+const createComment = async (req: RequestCustom, res: Response, next: NextFunction) => {
     const postID = req.params.post_id;
     const commentData: {} = {
         ...req.body,
-        postId: postID
+        postId: postID,
+        userId: req.user.email
     };
     try{
-        const post = await Post.findByPk(postID);
+        const post = await findPostById(postID);
         if(!post){
             res.status(404);
             throw Error("Post not found");
         }
         try{
-            await Comment.create(commentData);
+            await createNewComment(commentData);
             console.log(commentData);
             res.status(201).send("Commented Successfully");
         }catch(err){
@@ -82,13 +80,13 @@ const updateComment = async (req: RequestCustom, res: Response, next: NextFuncti
 
     try{
         //throw Error("Test error")
-        const post = await Post.findByPk(postID);
+        const post = await findPostById(postID);
         if(!post){
             res.status(404);
             throw Error("Post not found");
         }
         try{
-            const comment = await Comment.findByPk(commentID);
+            const comment = await findCommentById(commentID);
             if(!comment){
                 throw Error("Comment not found");
             }
@@ -98,7 +96,7 @@ const updateComment = async (req: RequestCustom, res: Response, next: NextFuncti
                 throw Error("Unauthorized");
             }
 
-            await comment.update(commentData);
+            await updateCommentById(commentData, commentID);
             res.send("Comment updates successfully");
         }catch(err){
             next(err);
@@ -113,13 +111,13 @@ const deleteComment = async (req: RequestCustom, res: Response, next: NextFuncti
     const commentID = req.params.comment_id;
     try{
         //throw Error("Test error")
-        const post = await Post.findByPk(postID);
+        const post = await findPostById(postID);
         if(!post){
             res.status(404);
             throw Error("Post not found");
         }
         try{
-            const comment = await Comment.findByPk(commentID);
+            const comment = await findCommentById(commentID);
             if(!comment){
                 res.status(404);
                 throw Error("Comment not found");
@@ -130,7 +128,7 @@ const deleteComment = async (req: RequestCustom, res: Response, next: NextFuncti
                 throw Error("Unauthorized");
             }
 
-            await comment.destroy()
+            await deleteCommentById(commentID);
             res.send("Comment deleted successfully");
         }catch(err){
             next(err);
