@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { postSchema, commentSchema, userSchema, RequestCustom } from "./schema";
-import { User } from "../model";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { findUserByEmail } from "../services/userService";
 
 
 const validatePostData = async (req: Request, res: Response, next: NextFunction) => {
@@ -34,29 +35,22 @@ const validateUserData = async (req: Request, res: Response, next: NextFunction)
 const authenticateUser = async (req: RequestCustom, res: Response, next: NextFunction) => {
     
     try{
-        const auth = req.headers.authorization;
-        if (!auth){
+        const authHeader = req.headers.authorization;
+        if (!authHeader){
             res.status(403);
             throw Error("Not authenticated");
         }
+        
+        /* using basic authentication */
+        // const encoded = auth.substring(6);
+        // const [email, password] = Buffer.from(encoded, "base64").toString().split(":");
 
-        const encoded = auth.substring(6);
-        const [email, password] = Buffer.from(encoded, "base64").toString().split(":");
-
-        const user = await User.findByPk(email);
-        if (!user){
-            res.status(403);
-            throw Error("Unknown user");
-        };
-
-        const matchUser = await bcrypt.compare(password, user.password);
-        if(!matchUser){
-            res.status(403);
-            throw Error("Invalid username or password");
-        };
-
-        console.log(email);
+        /* using jwt */
+        const token = authHeader.split(" ")[1];
+        const user: any = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        
         req.user = user;
+
         next();
     }catch(err){
         next(err);
