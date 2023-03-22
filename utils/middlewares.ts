@@ -45,8 +45,11 @@ const authenticateUser = async (req: RequestCustom, res: Response, next: NextFun
 
         /* using jwt */
         const token = authHeader.split(" ")[1];
+        if (!token){
+            res.status(403);
+            throw Error("Not authenticated");
+        }
         const user: any = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        
         req.user = user;
 
         next();

@@ -3,7 +3,7 @@ import { User } from "../model/index";
 import bcrpyt from "bcrypt";
 import { RequestCustom } from "../utils/schema";
 import { findUserByEmail } from "../services/userService";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -29,23 +29,25 @@ const registerUser = async (req: Request, res: Response, next: NextFunction) => 
 };
 
 const loginUser = async (req: RequestCustom, res: Response, next: NextFunction) => {
-    const {email, password} = req.body;
+    const userDetails = req.body;
 
     try{
-        const user = await findUserByEmail(email);
+        const user = await findUserByEmail(userDetails.email);
         if (!user){
             res.status(403);
             throw Error("Unknown user");
         };
 
-        const matchUser = await bcrpyt.compare(password, user.password);
+        const matchUser = await bcrpyt.compare(userDetails.password, user.password);
         if(!matchUser){
             res.status(403);
             throw Error("Invalid username or password");
         };
         
-        const token = jwt.sign(user, process.env.JWT_SECRET_KEY);
-        res.json(token)
+        const token = await jwt.sign(userDetails, process.env.JWT_SECRET_KEY);
+        res.json({
+            token: token
+        })
 
     }catch(err){
         next(err);
