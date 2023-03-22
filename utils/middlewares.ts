@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { postSchema, commentSchema, userSchema, RequestCustom } from "./schema";
-import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { findUserByEmail } from "../services/userService";
 
 
 const validatePostData = async (req: Request, res: Response, next: NextFunction) => {
